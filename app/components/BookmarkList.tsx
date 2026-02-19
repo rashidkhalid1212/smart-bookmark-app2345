@@ -3,14 +3,15 @@
 import { useEffect, useState } from "react";
 import { getSupabaseClient } from "@/lib/supabaseClient";
 
-export default function BookmarkList({ user }: any) {
+export default function BookmarkList({ userId }: { userId: string }) {
   const [bookmarks, setBookmarks] = useState<any[]>([]);
+  const supabase = getSupabaseClient();
 
   const fetchBookmarks = async () => {
-    const supabase = getSupabaseClient();
     const { data } = await supabase
       .from("bookmarks")
       .select("*")
+      .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
     setBookmarks(data || []);
@@ -20,9 +21,8 @@ export default function BookmarkList({ user }: any) {
     fetchBookmarks();
 
     // ✅ Realtime subscription
-    const supabase = getSupabaseClient();
     const channel = supabase
-      .channel("realtime-bookmarks")
+      .channel("bookmark-updates")
       .on(
         "postgres_changes",
         {
@@ -30,9 +30,7 @@ export default function BookmarkList({ user }: any) {
           schema: "public",
           table: "bookmarks",
         },
-        () => {
-          fetchBookmarks();
-        }
+        () => fetchBookmarks()
       )
       .subscribe();
 
@@ -42,18 +40,25 @@ export default function BookmarkList({ user }: any) {
   }, []);
 
   const deleteBookmark = async (id: string) => {
-    const supabase = getSupabaseClient();
     await supabase.from("bookmarks").delete().eq("id", id);
   };
 
   return (
     <div>
+      {bookmarks.length === 0 && (
+        <p className="text-gray-500">No bookmarks yet.</p>
+      )}
+
       {bookmarks.map((b) => (
         <div
           key={b.id}
           className="flex justify-between items-center border p-2 rounded mb-2"
         >
-          <a href={b.url} target="_blank" className="text-blue-600">
+          <a
+            href={b.url}
+            target="_blank"
+            className="text-blue-600 underline"
+          >
             {b.title}
           </a>
 
