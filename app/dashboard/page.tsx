@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { getSupabaseClient } from "@/lib/supabaseClient";
 import BookmarkForm from "../components/BookmarkForm";
 import BookmarkList from "../components/BookmarkList";
 
@@ -9,6 +9,7 @@ export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
+    const supabase = getSupabaseClient();
     supabase.auth.getUser().then(({ data }) => {
       setUser(data.user);
     });

@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { getSupabaseClient } from "@/lib/supabaseClient";
 
 export default function BookmarkList({ user }: any) {
   const [bookmarks, setBookmarks] = useState<any[]>([]);
 
   const fetchBookmarks = async () => {
+    const supabase = getSupabaseClient();
     const { data } = await supabase
       .from("bookmarks")
       .select("*")
@@ -19,6 +20,7 @@ export default function BookmarkList({ user }: any) {
     fetchBookmarks();
 
     // ✅ Realtime subscription
+    const supabase = getSupabaseClient();
     const channel = supabase
       .channel("realtime-bookmarks")
       .on(
@@ -40,6 +42,7 @@ export default function BookmarkList({ user }: any) {
   }, []);
 
   const deleteBookmark = async (id: string) => {
+    const supabase = getSupabaseClient();
     await supabase.from("bookmarks").delete().eq("id", id);
   };
 

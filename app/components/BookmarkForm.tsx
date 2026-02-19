@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { getSupabaseClient } from "@/lib/supabaseClient";
 
 export default function BookmarkForm({ user }: any) {
   const [title, setTitle] = useState("");
@@ -10,6 +10,7 @@ export default function BookmarkForm({ user }: any) {
   const addBookmark = async () => {
     if (!title || !url) return;
 
+    const supabase = getSupabaseClient();
     await supabase.from("bookmarks").insert([
       {
         title,
