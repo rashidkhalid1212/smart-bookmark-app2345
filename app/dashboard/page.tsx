@@ -1,30 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { getSupabaseClient } from "@/lib/supabaseClient";
-import BookmarkForm from "../components/BookmarkForm";
-import BookmarkList from "../components/BookmarkList";
 
 export default function Dashboard() {
+  const router = useRouter();
   const [user, setUser] = useState<any>(null);
+  const supabase = getSupabaseClient();
 
   useEffect(() => {
-    const supabase = getSupabaseClient();
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
-    });
-  }, []);
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
 
-  if (!user) return <p className="p-6">Loading...</p>;
+      if (!data.user) {
+        router.push("/login");
+      } else {
+        setUser(data.user);
+      }
+    };
 
-  return (
-    <div className="max-w-xl mx-auto mt-10">
-      <h1 className="text-2xl font-bold mb-4">
-        Welcome, {user.user_metadata.full_name}
-      </h1>
+    getUser();
+  }, [router]);
 
-      <BookmarkForm user={user} />
-      <BookmarkList user={user} />
-    </div>
-  );
+  if (!user) return <p>Loading...</p>;
+
+  return <h1>Welcome {user.email}</h1>;
 }
