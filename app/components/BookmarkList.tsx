@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getSupabaseClient } from "@/lib/supabaseClient";
+import { toAbsoluteUrl } from "@/lib/utils";
 
 export default function BookmarkList({ userId }: { userId: string }) {
   const [bookmarks, setBookmarks] = useState<any[]>([]);
@@ -63,7 +64,7 @@ export default function BookmarkList({ userId }: { userId: string }) {
           >
             <div className="min-w-0">
               <a
-                href={b.url}
+                href={toAbsoluteUrl(b.url)}
                 target="_blank"
                 rel="noreferrer"
                 className="line-clamp-1 font-medium text-blue-400 hover:text-blue-300 hover:underline"
@@ -71,7 +72,7 @@ export default function BookmarkList({ userId }: { userId: string }) {
                 {b.title}
               </a>
               <p className="mt-0.5 break-all text-[11px] text-slate-400">
-                {b.url}
+                {toAbsoluteUrl(b.url)}
               </p>
             </div>
 

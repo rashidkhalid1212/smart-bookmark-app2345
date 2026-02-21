@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { getSupabaseClient } from "@/lib/supabaseClient";
+import { toAbsoluteUrl } from "@/lib/utils";
 
 export default function BookmarkForm({ userId }: { userId: string }) {
   const [title, setTitle] = useState("");
@@ -11,10 +12,11 @@ export default function BookmarkForm({ userId }: { userId: string }) {
   const addBookmark = async () => {
     if (!title || !url) return;
 
+    const absoluteUrl = toAbsoluteUrl(url);
     await supabase.from("bookmarks").insert([
       {
         title,
-        url,
+        url: absoluteUrl,
         user_id: userId,
       },
     ]);
